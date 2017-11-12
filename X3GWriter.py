@@ -61,7 +61,15 @@ class X3GWriter(MeshWriter):
             if os.path.isfile(binary_filename + "_macos"): #Still fall back to the default name if the MacOS-specific file doesn't exist.
                 binary_filename += "_macos"
 
-        command = [binary_filename, "-p", "-m", "r1d", "-c", os.path.join(binary_path, "cfg.ini"), temp_file, file_name]
+        command = [binary_filename, "-p"]
+
+        machine = Application.getInstance().getGlobalContainerStack().getProperty("machine_gpx_type", "value")
+        if machine:
+            command += ["-m", machine]
+        else:
+            command += ["-c", os.path.join(binary_path, "cfg.ini")]
+
+        command += [temp_file, file_name]
         safes = [os.path.expandvars(p) for p in command]
         Logger.log("d", "Calling GPX: {command}".format(command=" ".join(command)))
         stream.close() #Close the file so that the binary can write to it.
